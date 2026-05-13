@@ -1,0 +1,139 @@
+-- QUERY 21
+-- Add the enrollment fees paid ('yes'/'No') field in the enrollment table
+
+ALTER TABLE ENROLLMENT
+ADD FeesPaid VARCHAR(5);
+
+
+
+
+-- QUERY 22
+-- Update date of enrollment of society id 's1' to '2018-01-15',
+-- 's2' to current date and 's3' to '2018-01-02'
+
+UPDATE ENROLLMENT
+SET DateOfEnrollment = '2018-01-15'
+WHERE SID='s1';
+
+UPDATE ENROLLMENT
+SET DateOfEnrollment = CURDATE()
+WHERE SID='s2';
+
+UPDATE ENROLLMENT
+SET DateOfEnrollment = '2018-01-02'
+WHERE SID='s3';
+
+
+
+
+-- QUERY 23
+-- Create a view to keep track of society names with the total number
+-- of students enrolled in it
+
+CREATE VIEW Society_Enrollment_View AS
+SELECT SocName, COUNT(RollNo) AS TotalStudents
+FROM SOCIETY
+LEFT JOIN ENROLLMENT
+ON SOCIETY.SocID = ENROLLMENT.SID
+GROUP BY SocName;
+
+
+
+
+-- QUERY 24
+-- Find student names enrolled in all the societies
+
+SELECT StudentName
+FROM STUDENT
+WHERE RollNo IN (
+    SELECT RollNo
+    FROM ENROLLMENT
+    GROUP BY RollNo
+    HAVING COUNT(DISTINCT SID) = (
+        SELECT COUNT(*)
+        FROM SOCIETY
+    )
+);
+
+
+
+
+-- QUERY 25
+-- Count the number of societies with more than 5 students enrolled in it
+
+SELECT COUNT(*)
+FROM (
+    SELECT SID
+    FROM ENROLLMENT
+    GROUP BY SID
+    HAVING COUNT(RollNo) > 5
+) AS temp;
+
+
+
+
+-- QUERY 26
+-- Add column Mobile number in student table
+-- with default value '9999999999'
+
+ALTER TABLE STUDENT
+ADD MobileNo VARCHAR(10)
+DEFAULT '9999999999';
+
+
+
+
+-- QUERY 27
+-- Find the total number of students whose age is > 20 years
+
+SELECT COUNT(*)
+FROM STUDENT
+WHERE TIMESTAMPDIFF(YEAR, DOB, CURDATE()) > 20;
+
+
+
+
+-- QUERY 28
+-- Find names of students who were born in 2001
+-- and are enrolled in at least one society
+
+SELECT DISTINCT StudentName
+FROM STUDENT, ENROLLMENT
+WHERE STUDENT.RollNo = ENROLLMENT.RollNo
+AND YEAR(DOB) = 2001;
+
+
+
+
+-- QUERY 29
+-- Count all societies whose name starts with 'S'
+-- and ends with 't' and at least 5 students are enrolled in the society
+
+SELECT COUNT(*)
+FROM (
+    SELECT SocName
+    FROM SOCIETY
+    JOIN ENROLLMENT
+    ON SOCIETY.SocID = ENROLLMENT.SID
+    WHERE SocName LIKE 'S%t'
+    GROUP BY SocName
+    HAVING COUNT(RollNo) >= 5
+) AS temp;
+
+
+
+
+-- QUERY 30
+-- Display:
+-- Society name | Mentor name | Total Capacity |
+-- Total Enrolled | Unfilled Seats
+
+SELECT SocName,
+       MentorName,
+       TotalSeats AS TotalCapacity,
+       COUNT(RollNo) AS TotalEnrolled,
+       TotalSeats - COUNT(RollNo) AS UnfilledSeats
+FROM SOCIETY
+LEFT JOIN ENROLLMENT
+ON SOCIETY.SocID = ENROLLMENT.SID
+GROUP BY SocName, MentorName, TotalSeats;
