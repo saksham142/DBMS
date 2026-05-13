@@ -1,0 +1,121 @@
+-- QUERY 11
+-- Find the name of two least popular societies
+-- (on the basis of enrolled students)
+
+SELECT SID, COUNT(RollNo)
+FROM ENROLLMENT
+GROUP BY SID
+ORDER BY COUNT(RollNo) ASC
+LIMIT 2;
+
+
+
+
+-- QUERY 12
+-- Find the students names who are not enrolled in any society
+
+SELECT StudentName
+FROM STUDENT
+WHERE RollNo NOT IN (
+    SELECT RollNo
+    FROM ENROLLMENT
+);
+
+
+
+
+-- QUERY 13
+-- Find the students names enrolled in at least two societies
+
+SELECT RollNo, COUNT(SID)
+FROM ENROLLMENT
+GROUP BY RollNo
+HAVING COUNT(SID) >= 2;
+
+
+
+
+-- QUERY 14
+-- Find society names in which maximum students are enrolled
+
+SELECT SID, COUNT(RollNo)
+FROM ENROLLMENT
+GROUP BY SID
+HAVING COUNT(RollNo) = (
+    SELECT MAX(total_students)
+    FROM (
+        SELECT COUNT(RollNo) AS total_students
+        FROM ENROLLMENT
+        GROUP BY SID
+    ) AS temp
+);
+
+
+
+
+-- QUERY 15
+-- Find names of all students who have enrolled in any society
+-- and society names in which at least one student has enrolled
+
+SELECT StudentName, SocName
+FROM STUDENT, SOCIETY, ENROLLMENT
+WHERE STUDENT.RollNo = ENROLLMENT.RollNo
+AND SOCIETY.SocID = ENROLLMENT.SID;
+
+
+
+
+-- QUERY 16
+-- Find names of students who are enrolled in any of the three societies
+-- 'Debating', 'Dancing', and 'Sashakt'
+
+SELECT DISTINCT StudentName
+FROM STUDENT, SOCIETY, ENROLLMENT
+WHERE STUDENT.RollNo = ENROLLMENT.RollNo
+AND SOCIETY.SocID = ENROLLMENT.SID
+AND SocName IN ('Debating', 'Dancing', 'Sashakt');
+
+
+
+
+-- QUERY 17
+-- Find society names such that its mentor has a name with 'Gupta' in it
+
+SELECT SocName
+FROM SOCIETY
+WHERE MentorName LIKE '%Gupta%';
+
+
+
+
+-- QUERY 18
+-- Find the society names in which the number of enrolled students
+-- is only 10% of its capacity
+
+SELECT SocName
+FROM SOCIETY, ENROLLMENT
+WHERE SOCIETY.SocID = ENROLLMENT.SID
+GROUP BY SocName, TotalSeats
+HAVING COUNT(RollNo) = TotalSeats * 0.1;
+
+
+
+
+-- QUERY 19
+-- Display the vacant seats for each society
+
+SELECT SocName,
+       TotalSeats - COUNT(RollNo) AS VacantSeats
+FROM SOCIETY
+LEFT JOIN ENROLLMENT
+ON SOCIETY.SocID = ENROLLMENT.SID
+GROUP BY SocName, TotalSeats;
+
+
+
+
+-- QUERY 20
+-- Increment Total Seats of each society by 10%
+
+UPDATE SOCIETY
+SET TotalSeats = TotalSeats + (TotalSeats * 0.10);
