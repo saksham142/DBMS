@@ -1,5 +1,5 @@
 -- QUERY 1
--- Retrieve names of all students enrolled in any society
+-- Retrieve names of students enrolled in any society
 
 SELECT StudentName
 FROM STUDENT
@@ -21,7 +21,7 @@ FROM SOCIETY;
 
 
 -- QUERY 3
--- Retrieve student names starting with 'A'
+-- Retrieve students' names starting with the letter 'A'
 
 SELECT StudentName
 FROM STUDENT
@@ -31,7 +31,7 @@ WHERE StudentName LIKE 'A%';
 
 
 -- QUERY 4
--- Retrieve students studying in Computer Science or Chemistry
+-- Retrieve students' details studying in courses 'computer science' or 'chemistry'
 
 SELECT *
 FROM STUDENT
@@ -42,17 +42,18 @@ OR Course='Chem';
 
 
 -- QUERY 5
--- Retrieve student names whose RollNo is greater than S10003
+-- Retrieve students' names whose roll no either starts with 'X' or 'Z' and ends with '9'
 
 SELECT StudentName
 FROM STUDENT
-WHERE RollNo > 'S10003';
+WHERE (RollNo LIKE 'X%9'
+OR RollNo LIKE 'Z%9');
 
 
 
 
 -- QUERY 6
--- Retrieve society details having more than 30 seats
+-- Find society details with more than N TotalSeats where N is input by the user
 
 SELECT *
 FROM SOCIETY
@@ -62,44 +63,54 @@ WHERE TotalSeats > 30;
 
 
 -- QUERY 7
--- Retrieve names of students enrolled in NSS society
+-- Update society table for the mentor name of a specific society
 
-SELECT StudentName
-FROM STUDENT, ENROLLMENT, SOCIETY
-WHERE STUDENT.RollNo = ENROLLMENT.RollNo
-AND ENROLLMENT.SID = SOCIETY.SocID
-AND SocName='NSS';
+UPDATE SOCIETY
+SET MentorName='Agarwal'
+WHERE SocName='NSS';
 
 
 
 
 -- QUERY 8
--- Retrieve student names with their society names
+-- Find society names in which more than five students have enrolled
 
-SELECT StudentName, SocName
-FROM STUDENT, SOCIETY, ENROLLMENT
-WHERE STUDENT.RollNo = ENROLLMENT.RollNo
-AND SOCIETY.SocID = ENROLLMENT.SID;
+SELECT SID, COUNT(RollNo)
+FROM ENROLLMENT
+GROUP BY SID
+HAVING COUNT(RollNo) > 5;
 
 
 
 
 -- QUERY 9
--- Retrieve number of students enrolled in each society
+-- Find the name of the youngest student enrolled in society 'NSS'
 
-SELECT SID, COUNT(RollNo)
-FROM ENROLLMENT
-GROUP BY SID;
+SELECT StudentName
+FROM STUDENT
+WHERE DOB = (
+    SELECT MAX(DOB)
+    FROM STUDENT
+    WHERE RollNo IN (
+        SELECT RollNo
+        FROM ENROLLMENT
+        WHERE SID = (
+            SELECT SocID
+            FROM SOCIETY
+            WHERE SocName='NSS'
+        )
+    )
+);
 
 
 
 
 -- QUERY 10
--- Retrieve oldest student
+-- Find the name of the most popular society
+-- (on the basis of enrolled students)
 
-SELECT *
-FROM STUDENT
-WHERE DOB = (
-    SELECT MIN(DOB)
-    FROM STUDENT
-);
+SELECT SID, COUNT(RollNo)
+FROM ENROLLMENT
+GROUP BY SID
+ORDER BY COUNT(RollNo) DESC
+LIMIT 1;
