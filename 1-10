@@ -1,0 +1,105 @@
+-- QUERY 1
+-- Retrieve names of all students enrolled in any society
+
+SELECT StudentName
+FROM STUDENT
+WHERE RollNo IN (
+    SELECT RollNo
+    FROM ENROLLMENT
+);
+
+
+
+
+-- QUERY 2
+-- Retrieve all society names
+
+SELECT SocName
+FROM SOCIETY;
+
+
+
+
+-- QUERY 3
+-- Retrieve student names starting with 'A'
+
+SELECT StudentName
+FROM STUDENT
+WHERE StudentName LIKE 'A%';
+
+
+
+
+-- QUERY 4
+-- Retrieve students studying in Computer Science or Chemistry
+
+SELECT *
+FROM STUDENT
+WHERE Course='CS'
+OR Course='Chem';
+
+
+
+
+-- QUERY 5
+-- Retrieve student names whose RollNo is greater than S10003
+
+SELECT StudentName
+FROM STUDENT
+WHERE RollNo > 'S10003';
+
+
+
+
+-- QUERY 6
+-- Retrieve society details having more than 30 seats
+
+SELECT *
+FROM SOCIETY
+WHERE TotalSeats > 30;
+
+
+
+
+-- QUERY 7
+-- Retrieve names of students enrolled in NSS society
+
+SELECT StudentName
+FROM STUDENT, ENROLLMENT, SOCIETY
+WHERE STUDENT.RollNo = ENROLLMENT.RollNo
+AND ENROLLMENT.SID = SOCIETY.SocID
+AND SocName='NSS';
+
+
+
+
+-- QUERY 8
+-- Retrieve student names with their society names
+
+SELECT StudentName, SocName
+FROM STUDENT, SOCIETY, ENROLLMENT
+WHERE STUDENT.RollNo = ENROLLMENT.RollNo
+AND SOCIETY.SocID = ENROLLMENT.SID;
+
+
+
+
+-- QUERY 9
+-- Retrieve number of students enrolled in each society
+
+SELECT SID, COUNT(RollNo)
+FROM ENROLLMENT
+GROUP BY SID;
+
+
+
+
+-- QUERY 10
+-- Retrieve oldest student
+
+SELECT *
+FROM STUDENT
+WHERE DOB = (
+    SELECT MIN(DOB)
+    FROM STUDENT
+);
