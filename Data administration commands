@@ -1,0 +1,45 @@
+-- 1. Create User
+
+CREATE USER 'student1'@'localhost'
+IDENTIFIED BY 'pass123';
+
+
+
+
+-- 2. Create Role
+
+CREATE ROLE 'lab_role';
+
+
+
+
+-- 3. Grant Privileges to Role
+
+GRANT SELECT, INSERT, UPDATE
+ON college_society.*
+TO 'lab_role';
+
+
+
+
+-- 4. Assign Role to User
+
+GRANT 'lab_role'
+TO 'student1'@'localhost';
+
+
+
+
+-- 5. Revoke Privileges from Role
+
+REVOKE UPDATE
+ON college_society.*
+FROM 'lab_role';
+
+
+
+
+-- 6. Create Index on StudentName
+
+CREATE INDEX idx_studentname
+ON STUDENT(StudentName);
