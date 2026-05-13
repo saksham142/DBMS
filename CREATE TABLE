@@ -1,0 +1,57 @@
+-- STEP 1 : Create Database
+CREATE DATABASE college_society;
+
+-- STEP 2 : Select Database
+USE college_society;
+
+-- STEP 3 : Create STUDENT Table
+CREATE TABLE STUDENT (
+    RollNo CHAR(6) PRIMARY KEY,
+    StudentName VARCHAR(20),
+    Course VARCHAR(10),
+    DOB DATE
+);
+
+-- STEP 4 : Create SOCIETY Table
+CREATE TABLE SOCIETY (
+    SocID CHAR(6) PRIMARY KEY,
+    SocName VARCHAR(20),
+    MentorName VARCHAR(15),
+    TotalSeats INT UNSIGNED
+);
+
+-- STEP 5 : Create ENROLLMENT Table
+CREATE TABLE ENROLLMENT (
+    RollNo CHAR(6),
+    SID CHAR(6),
+    DateOfEnrollment DATE,
+
+    FOREIGN KEY (RollNo) REFERENCES STUDENT(RollNo),
+    FOREIGN KEY (SID) REFERENCES SOCIETY(SocID)
+);
+
+-- STEP 6 : Check Created Tables
+SHOW TABLES;
+
+-- STEP 7 : Insert Records into STUDENT Table
+INSERT INTO STUDENT VALUES
+('S10001','Aman','CS','2003-05-11'),
+('S10002','Riya','Chem','2002-08-20'),
+('S10003','Arjun','CS','2001-01-10'),
+('S10004','Sneha','Math','2000-12-01'),
+('S10005','Zoya','Chem','2004-03-15');
+
+-- STEP 8 : Insert Records into SOCIETY Table
+INSERT INTO SOCIETY VALUES
+('SOC01','NSS','Gupta',50),
+('SOC02','Debating','Sharma',40),
+('SOC03','Dancing','Mehta',35),
+('SOC04','Sashakt','Verma',25);
+
+-- STEP 9 : Insert Records into ENROLLMENT Table
+INSERT INTO ENROLLMENT VALUES
+('S10001','SOC01','2024-01-10'),
+('S10001','SOC02','2024-01-12'),
+('S10002','SOC01','2024-01-11'),
+('S10003','SOC03','2024-01-09'),
+('S10004','SOC04','2024-01-15');
